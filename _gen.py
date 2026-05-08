@@ -550,8 +550,7 @@ slides[69] += '''  <h1 style="position:absolute;top:64pt;left:48pt;right:48pt;fo
 slides[70] = HEAD.format(title='Slide 70') + header(70, 'CLOSING')
 slides[70] += '''  <div style="position:absolute;left:48pt;right:48pt;top:50%;transform:translateY(-50%);">
     <p class="mono" style="font-size:9pt;color:#707070;margin-bottom:18pt;">REFLECTION</p>
-    <h1 style="font-size:42pt;font-weight:700;color:#FFFFFF;line-height:1.3;letter-spacing:-0.025em;max-width:640pt;">도메인 위에 AI를 얹을 때,<br><span style="color:#B0B0B0;">가장 빠르게 멀리 간다.</span></h1>
-    <p style="font-size:13pt;color:#B0B0B0;margin-top:24pt;line-height:1.6;">현재 빌드 — 연출 다듬기 / UI·UX 개선 / 데이터 폴리싱.<br>다음 항해 — 서브컬처 게임. 콘텐츠 점수화·자동 밸런스 실험.</p>
+    <h1 style="font-size:38pt;font-weight:700;color:#FFFFFF;line-height:1.3;letter-spacing:-0.025em;max-width:640pt;">결과로 증명해온 기획자의 역량,<br><span style="color:#B0B0B0;">AI 네이티브 시대에 가장 빛난다.</span></h1>
   </div>
   <p class="mono" style="position:absolute;bottom:36pt;left:48pt;font-size:9pt;color:#707070;">유 병 휘 · 2026 · W01—W08</p>
   <p class="mono" style="position:absolute;bottom:36pt;right:48pt;font-size:9pt;color:#707070;">CONTINUE →</p>
