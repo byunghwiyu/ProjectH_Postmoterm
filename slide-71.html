@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Slide 68</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:720pt;height:405pt;background:#0F0F0F;color:#FFFFFF;font-family:'Pretendard',-apple-system,sans-serif;overflow:hidden;position:relative}
+  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:0.18em;text-transform:uppercase}
+  .panel-frame{background:#1A1A1A;border:1pt solid #333;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .panel-frame img{width:100%;height:100%;object-fit:contain;display:block;}
+  .video-card{background:#1A1A1A;border:1pt solid #333;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14pt;overflow:hidden;position:relative;text-decoration:none;}
+  .video-card img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.65);}
+  .video-card .play{position:relative;font-size:54pt;color:#FFFFFF;line-height:1.4;text-shadow:0 2pt 8pt rgba(0,0,0,0.6);z-index:1;}
+  .video-card .label{position:absolute;bottom:14pt;font-size:9pt;color:#FFFFFF;text-shadow:0 1pt 4pt rgba(0,0,0,0.8);z-index:1;font-family:'JetBrains Mono',monospace;letter-spacing:0.18em;text-transform:uppercase;}
+  a.video-card:hover{border-color:#666;}
+</style>
+</head>
+<body>
+  <p class="mono" style="position:absolute;top:32pt;left:48pt;font-size:9pt;color:#707070;">PART 3 · BUILD VIDEO GALLERY</p>
+  <p class="mono" style="font-size:9pt;color:#707070;position:absolute;top:32pt;right:48pt;">P. 71</p>
+  <h1 style="position:absolute;top:64pt;left:48pt;right:48pt;font-size:22pt;font-weight:700;color:#FFFFFF;line-height:1.32;letter-spacing:-0.02em;">빌드의 발전 과정. <span style="color:#B0B0B0;">최종 빌드 + 4편의 기록.</span></h1>
+
+  <!-- 좌측: 4개 작은 썸네일 (2x2 그리드, 기록 용도) -->
+  <div style="position:absolute;left:48pt;top:122pt;width:240pt;display:grid;grid-template-columns:1fr 1fr;gap:6pt;">
+    <div style="background:#1A1A1A;border:1pt solid #333;height:84pt;position:relative;overflow:hidden;">
+      <img src="./assets/video_3_thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.85);">
+      <p class="mono" style="position:absolute;bottom:4pt;left:6pt;font-size:6.5pt;color:#FFFFFF;text-shadow:0 1pt 2pt rgba(0,0,0,0.8);">3번 · 0311</p>
+    </div>
+    <div style="background:#1A1A1A;border:1pt solid #333;height:84pt;position:relative;overflow:hidden;">
+      <img src="./assets/video_4_thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.85);">
+      <p class="mono" style="position:absolute;bottom:4pt;left:6pt;font-size:6.5pt;color:#FFFFFF;text-shadow:0 1pt 2pt rgba(0,0,0,0.8);">4번 · 0405</p>
+    </div>
+    <div style="background:#1A1A1A;border:1pt solid #333;height:84pt;position:relative;overflow:hidden;">
+      <img src="./assets/video_6_thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.85);">
+      <p class="mono" style="position:absolute;bottom:4pt;left:6pt;font-size:6.5pt;color:#FFFFFF;text-shadow:0 1pt 2pt rgba(0,0,0,0.8);">6번 빌드</p>
+    </div>
+    <div style="background:#1A1A1A;border:1pt solid #333;height:84pt;position:relative;overflow:hidden;">
+      <img src="./assets/video_7_thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.85);">
+      <p class="mono" style="position:absolute;bottom:4pt;left:6pt;font-size:6.5pt;color:#FFFFFF;text-shadow:0 1pt 2pt rgba(0,0,0,0.8);">7번 빌드</p>
+    </div>
+  </div>
+  <p class="mono" style="position:absolute;left:48pt;top:300pt;width:240pt;font-size:7pt;color:#707070;">RECORD · 4편의 빌드 진화 (썸네일만)</p>
+
+  <!-- 우측: Final 영상 (큰 사이즈, 인라인 재생 가능) -->
+  <video controls preload="metadata" poster="./assets/video_final_thumb.jpg" style="position:absolute;right:48pt;top:122pt;width:336pt;height:189pt;background:#1A1A1A;border:1pt solid #333;object-fit:contain;">
+    <source src="./assets/vfinal.mp4" type="video/mp4">
+  </video>
+  <p class="mono" style="position:absolute;right:48pt;top:316pt;width:336pt;font-size:8pt;color:#FFFFFF;">FINAL BUILD · PROJECT-H-FINAL.MP4</p>
+  <p style="position:absolute;right:48pt;top:332pt;width:336pt;font-size:11pt;color:#B0B0B0;line-height:1.5;">8주차 최종 빌드. ▶ 버튼 클릭 시 슬라이드 안에서 재생.</p>
+
+  <p class="mono" style="position:absolute;bottom:24pt;left:48pt;right:48pt;text-align:center;font-size:8pt;color:#707070;">3번 → 4번 → 6번 → 7번 → FINAL · 8주의 시각 기록</p>
+</body>
+</html>

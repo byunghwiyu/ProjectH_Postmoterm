@@ -1,0 +1,11 @@
+# 생성 스크립트와 작업 산출물 (선택)
+# _gen.py 는 유지 (코드 공개해도 무방)
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 임시 파일
+*.tmp
+*.bak
