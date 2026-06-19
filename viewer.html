@@ -22,7 +22,6 @@
       flex-direction: column;
     }
 
-    /* Navigation bar */
     .nav-bar {
       height: 48px;
       background: #1a1a1a;
@@ -73,7 +72,6 @@
       padding: 6px 10px !important;
     }
 
-    /* Slide viewport */
     .slide-viewport {
       flex: 1;
       display: flex;
@@ -90,7 +88,6 @@
       transform-origin: center center;
     }
 
-    /* Slide frames (iframes) */
     .slide-frame {
       position: absolute;
       inset: 0;
@@ -111,7 +108,6 @@
 </head>
 <body>
   <div class="viewer-container">
-    <!-- Navigation -->
     <div class="nav-bar">
       <button id="btn-prev" title="Previous (\u2190)">Prev</button>
       <span class="slide-counter" id="counter">1 / 75</span>
@@ -119,7 +115,6 @@
       <button class="btn-fullscreen" id="btn-fs" title="Fullscreen (F)">&#x26F6;</button>
     </div>
 
-    <!-- Slide viewport -->
     <div class="slide-viewport" id="viewport">
       <div class="slide-scaler" id="scaler">
         <iframe class="slide-frame active" data-slide="1" srcdoc="<!DOCTYPE html>
@@ -666,7 +661,7 @@
 
   <div style=&quot;position:absolute;left:48pt;right:48pt;top:50%;transform:translateY(-50%);&quot;>
     <p class=&quot;mono&quot; style=&quot;font-size:10pt;color:#707070;margin-bottom:16pt;&quot;>FROM THE AUTHOR</p>
-    <h1 style=&quot;font-size:48pt;font-weight:700;color:#FFFFFF;line-height:1.25;letter-spacing:-0.025em;&quot;>프론트도, 백엔드도<br>전무한 게임 디자이너가<br>1인 개발하기.</h1>
+    <h1 style=&quot;font-size:48pt;font-weight:700;color:#FFFFFF;line-height:1.25;letter-spacing:-0.025em;&quot;>코딩 지식 Zero.<br>게임 디자이너가<br>1인 개발하기.</h1>
   </div>
 
   <p class=&quot;mono&quot; style=&quot;position:absolute;bottom:36pt;left:48pt;font-size:9pt;color:#707070;&quot;>유 병 휘 · 15년차 PD · 시니어 게임 디자이너</p>
@@ -1027,8 +1022,7 @@
 </html>
 " sandbox="allow-same-origin"></iframe>
         <iframe class="slide-frame" data-slide="6" srcdoc="<!DOCTYPE html>
-<html lang=&quot;ko&quot;>
-<head>
+<html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
 (() => {
@@ -1180,7 +1174,7 @@
 <meta charset=&quot;UTF-8&quot;>
 <title>8주 타임라인</title>
 <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css&quot;>
-<link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300..700&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+<link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300..700&amp;amp;display=swap&quot; rel=&quot;stylesheet&quot;>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{width:720pt;height:405pt;background:#0F0F0F;color:#FFFFFF;font-family:'Pretendard',-apple-system,sans-serif;overflow:hidden;position:relative}
@@ -1194,7 +1188,7 @@
   <p class=&quot;mono&quot; style=&quot;position:absolute;top:32pt;left:48pt;font-size:9pt;color:#707070;&quot;>8 WEEKS · TIMELINE AT A GLANCE</p>
   <p class=&quot;mono&quot; style=&quot;font-size:9pt;color:#707070;position:absolute;top:32pt;right:48pt;&quot;>P. 06</p>
 
-  <h1 style=&quot;position:absolute;top:64pt;left:48pt;right:48pt;font-size:32pt;font-weight:700;color:#FFFFFF;line-height:1.25;letter-spacing:-0.02em;&quot;>웹 → 유니티를 통해 8주간 개발.</h1>
+  <h1 style=&quot;position:absolute;top:64pt;left:48pt;right:48pt;font-size:32pt;font-weight:700;color:#FFFFFF;line-height:1.25;letter-spacing:-0.02em;&quot;></h1>
 
   <div style=&quot;position:absolute;left:48pt;right:48pt;top:140pt;bottom:36pt;&quot;>
     <div class=&quot;row&quot;><span class=&quot;wk&quot;>W 01</span><span class=&quot;ttl&quot;>첫 코덱스</span></div>
@@ -1206,9 +1200,9 @@
     <div class=&quot;row&quot;><span class=&quot;wk&quot;>W 07</span><span class=&quot;ttl&quot;>레이드, 콘텐츠 루프 완성</span></div>
     <div class=&quot;row&quot; style=&quot;border-bottom:none;&quot;><span class=&quot;wk&quot;>W 08</span><span class=&quot;ttl&quot;>리팩토링·밸런스·회귀</span></div>
   </div>
-</body>
-</html>
-" sandbox="allow-same-origin"></iframe>
+
+
+</body></html>" sandbox="allow-same-origin"></iframe>
         <iframe class="slide-frame" data-slide="7" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
@@ -13869,7 +13863,6 @@
     btnNext.addEventListener('click', next);
     btnPrev.disabled = true;
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
@@ -13881,7 +13874,6 @@
       }
     });
 
-    // Fullscreen
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -13891,7 +13883,6 @@
     }
     document.getElementById('btn-fs').addEventListener('click', toggleFullscreen);
 
-    // Auto-scale to fit viewport (95% fit)
     function rescale() {
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
