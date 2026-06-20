@@ -110,7 +110,7 @@
   <div class="viewer-container">
     <div class="nav-bar">
       <button id="btn-prev" title="Previous (\u2190)">Prev</button>
-      <span class="slide-counter" id="counter">1 / 76</span>
+      <span class="slide-counter" id="counter">1 / 77</span>
       <button id="btn-next" title="Next (\u2192)">Next</button>
       <button class="btn-fullscreen" id="btn-fs" title="Fullscreen (F)">&#x26F6;</button>
     </div>
@@ -300,6 +300,227 @@
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
         <iframe class="slide-frame" data-slide="2" srcdoc="<!DOCTYPE html>
+<html lang=&quot;ko&quot;>
+<head>
+<base href=&quot;./&quot;>
+<script>
+(() => {
+  const slideFile = &quot;slide-01a.html&quot;;
+  const localAssetPrefix = &quot;./assets/&quot;;
+  const absolutePathRe = /^(file:\/\/|\/Users\/|\/home\/|\/var\/|\/tmp\/|\/private\/|\/Volumes\/|[A-Za-z]:[\\/]|\\\\)/i;
+  const schemeRe = /^[a-z][a-z0-9+\-.]*:/i;
+  const prefix = '[slides-grab:image]';
+
+  function describeElement(element) {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) return '';
+    if (element === document.body) return 'body';
+
+    const parts = [];
+    let current = element;
+    while (current &amp;&amp; current.nodeType === Node.ELEMENT_NODE &amp;&amp; current !== document.body) {
+      let part = current.tagName.toLowerCase();
+      if (current.id) {
+        part += '#' + current.id;
+        parts.unshift(part);
+        break;
+      }
+      if (current.classList.length > 0) {
+        part += '.' + Array.from(current.classList).slice(0, 2).join('.');
+      }
+      parts.unshift(part);
+      current = current.parentElement;
+    }
+    return 'body > ' + parts.join(' > ');
+  }
+
+  function warn(message, detail) {
+    console.warn(prefix + ' ' + slideFile + ': ' + message, detail);
+  }
+
+  function fail(message, detail) {
+    console.error(prefix + ' ' + slideFile + ': ' + message, detail);
+  }
+
+  function validateAssetSource(kind, source, { allowEmpty = true, onNoncanonical = 'warn' } = {}) {
+    const value = (source || '').trim();
+    if (!value) {
+      return allowEmpty;
+    }
+    if (value.startsWith('data:')) {
+      return true;
+    }
+    if (value.startsWith('https://')) {
+      fail('remote ' + kind + ' URL is unsupported in saved slides; download it into ./assets/<file>', { src: value });
+      return false;
+    }
+    if (value.startsWith('http://')) {
+      fail('remote http:// ' + kind + ' URL is unsupported in saved slides; download it into ./assets/<file>', { src: value });
+      return false;
+    }
+    if (absolutePathRe.test(value) || value.startsWith('/')) {
+      fail('non-portable ' + kind + ' path is unsupported', { src: value });
+      return false;
+    }
+    if (schemeRe.test(value)) {
+      fail('unsupported ' + kind + ' URL scheme in saved slides; download it into ./assets/<file>', { src: value });
+      return false;
+    }
+    if (!value.startsWith(localAssetPrefix)) {
+      const report = onNoncanonical === 'fail' ? fail : warn;
+      report('noncanonical local ' + kind + ' path should use ./assets/<file>', { src: value });
+    }
+    return true;
+  }
+
+  function getVideoSources(video) {
+    const sources = [];
+    const directSrc = (video.getAttribute('src') || '').trim();
+    if (directSrc) {
+      sources.push(directSrc);
+    }
+    for (const source of video.querySelectorAll('source[src]')) {
+      const src = (source.getAttribute('src') || '').trim();
+      if (src) {
+        sources.push(src);
+      }
+    }
+    return sources;
+  }
+
+  window.addEventListener('error', (event) => {
+    const target = event.target;
+    if (target instanceof HTMLImageElement) {
+      const src = (target.getAttribute('src') || target.currentSrc || '').trim();
+      if (!src || src.startsWith('data:')) return;
+      if (src.startsWith(localAssetPrefix)) {
+        fail('missing local asset', { src });
+        return;
+      }
+      fail('image failed to load', { src });
+      return;
+    }
+
+    if (target instanceof HTMLVideoElement) {
+      const sources = getVideoSources(target);
+      if (sources.some((src) => src.startsWith(localAssetPrefix))) {
+        fail('missing local video asset', { sources });
+        return;
+      }
+      fail('video failed to load', { sources });
+      return;
+    }
+
+    if (target instanceof HTMLSourceElement &amp;&amp; target.parentElement instanceof HTMLVideoElement) {
+      const src = (target.getAttribute('src') || '').trim();
+      if (!src) return;
+      if (src.startsWith(localAssetPrefix)) {
+        fail('missing local video asset', { src });
+        return;
+      }
+      fail('video source failed to load', { src });
+    }
+  }, true);
+
+  window.addEventListener('DOMContentLoaded', () => {
+    for (const image of document.querySelectorAll('img[src]')) {
+      const src = (image.getAttribute('src') || '').trim();
+      validateAssetSource('image', src);
+    }
+
+    for (const video of document.querySelectorAll('video')) {
+      for (const src of getVideoSources(video)) {
+        validateAssetSource('video', src);
+      }
+
+      const poster = (video.getAttribute('poster') || '').trim();
+      if (poster) {
+        validateAssetSource('image', poster);
+      }
+    }
+
+    for (const element of document.body.querySelectorAll('*')) {
+      if (element === document.body) continue;
+      const backgroundImage = window.getComputedStyle(element).backgroundImage;
+      if (!backgroundImage || backgroundImage === 'none' || !backgroundImage.includes('url(')) continue;
+      fail('non-body background-image is not supported for slide content', {
+        element: describeElement(element),
+        backgroundImage,
+      });
+    }
+  });
+})();
+</script>
+<meta charset=&quot;UTF-8&quot;>
+<title>Profile</title>
+<link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css&quot;>
+<link href=&quot;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300..700&amp;amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:720pt;height:405pt;background:#0F0F0F;color:#FFFFFF;font-family:'Pretendard',-apple-system,sans-serif;overflow:hidden;position:relative}
+  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:0.18em;text-transform:uppercase}
+  .chip{display:block;border:1pt solid #333;border-radius:999pt;padding:5pt 10pt;margin-bottom:7pt;font-size:10.5pt;color:#E6E6E6;background:#151515}
+  .row{display:grid;grid-template-columns:48pt 1fr;gap:14pt;padding:5pt 0;border-top:1pt solid #1F1F1F}
+  .row:last-child{border-bottom:0}
+</style>
+</head>
+<body>
+  <p class=&quot;mono&quot; style=&quot;position:absolute;top:32pt;left:48pt;font-size:9pt;color:#707070;&quot;>PROFILE</p>
+  <p class=&quot;mono&quot; style=&quot;position:absolute;top:32pt;right:48pt;font-size:9pt;color:#707070;&quot;>P. 01A</p>
+
+  <section style=&quot;position:absolute;left:48pt;right:48pt;top:82pt;&quot;>
+    <p class=&quot;mono&quot; style=&quot;font-size:8.5pt;color:#707070;margin-bottom:16pt;&quot;>PROJECT DIRECTOR / GAME DESIGNER</p>
+    <h1 style=&quot;font-size:18pt;font-weight:700;line-height:1.3;letter-spacing:0;color:#FFFFFF;white-space:nowrap;&quot;>
+      MMORPG, 콘솔 액션 게임, 서브컬처 액션 게임의 프로젝트 디렉터와 게임 기획자로 활약
+    </h1>
+  </section>
+
+  <div style=&quot;position:absolute;left:48pt;right:48pt;top:164pt;height:188pt;display:grid;grid-template-columns:1fr 224pt;gap:36pt;align-items:start;&quot;>
+    <section>
+      <p class=&quot;mono&quot; style=&quot;font-size:8.5pt;color:#707070;margin-bottom:10pt;&quot;>KEY CAREER</p>
+      <div class=&quot;row&quot;>
+        <p class=&quot;mono&quot; style=&quot;font-size:9.5pt;color:#707070;&quot;>2024</p>
+        <div>
+          <h2 style=&quot;font-size:13pt;font-weight:700;line-height:1.2;color:#FFFFFF;&quot;>DawnLike</h2>
+          <p style=&quot;font-size:10pt;line-height:1.3;color:#BDBDBD;margin-top:2pt;&quot;>MMORPG Project D 개발<br><span style=&quot;color:#808080;&quot;>Senior Game Designer</span></p>
+        </div>
+      </div>
+      <div class=&quot;row&quot;>
+        <p class=&quot;mono&quot; style=&quot;font-size:9.5pt;color:#707070;&quot;>2022</p>
+        <div>
+          <h2 style=&quot;font-size:13pt;font-weight:700;line-height:1.2;color:#FFFFFF;&quot;>Naddic Games</h2>
+          <p style=&quot;font-size:10pt;line-height:1.3;color:#BDBDBD;margin-top:2pt;&quot;>신규 Project B 개발<br><span style=&quot;color:#808080;&quot;>PD</span></p>
+        </div>
+      </div>
+      <div class=&quot;row&quot;>
+        <p class=&quot;mono&quot; style=&quot;font-size:9.5pt;color:#707070;&quot;>2018</p>
+        <div>
+          <h2 style=&quot;font-size:13pt;font-weight:700;line-height:1.2;color:#FFFFFF;&quot;>Closers PD</h2>
+          <p style=&quot;font-size:10pt;line-height:1.3;color:#BDBDBD;margin-top:2pt;&quot;>Naddic Games</p>
+        </div>
+      </div>
+      <div class=&quot;row&quot;>
+        <p class=&quot;mono&quot; style=&quot;font-size:9.5pt;color:#707070;&quot;>2013</p>
+        <div>
+          <h2 style=&quot;font-size:13pt;font-weight:700;line-height:1.2;color:#FFFFFF;&quot;>Closers 개발</h2>
+          <p style=&quot;font-size:10pt;line-height:1.3;color:#BDBDBD;margin-top:2pt;&quot;>Naddic Games</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class=&quot;mono&quot; style=&quot;font-size:8.5pt;color:#707070;margin-bottom:13pt;&quot;>SPECIALTIES</p>
+      <div>
+        <span class=&quot;chip&quot;>Game Design</span>
+        <span class=&quot;chip&quot;>Game Contents</span>
+        <span class=&quot;chip&quot;>Character &amp;amp; Combat Design</span>
+        <span class=&quot;chip&quot;>Level Design</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+        <iframe class="slide-frame" data-slide="3" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -495,7 +716,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="3" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="4" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -668,7 +889,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="4" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="5" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -844,7 +1065,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="5" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="6" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -1021,7 +1242,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="6" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="7" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -1203,7 +1424,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="7" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="8" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -1383,7 +1604,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="8" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="9" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -1567,7 +1788,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="9" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="10" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -1753,7 +1974,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="10" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="11" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -1943,7 +2164,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="11" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="12" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -2126,7 +2347,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="12" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="13" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -2310,7 +2531,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="13" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="14" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -2494,7 +2715,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="14" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="15" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -2678,7 +2899,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="15" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="16" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -2862,7 +3083,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="16" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="17" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -3034,7 +3255,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="17" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="18" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -3209,7 +3430,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="18" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="19" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -3388,7 +3609,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="19" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="20" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -3579,7 +3800,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="20" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="21" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -3751,7 +3972,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="21" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="22" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -3933,7 +4154,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="22" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="23" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -4115,7 +4336,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="23" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="24" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -4297,7 +4518,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="24" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="25" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -4479,7 +4700,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="25" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="26" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -4661,7 +4882,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="26" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="27" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -4844,7 +5065,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="27" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="28" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -5026,7 +5247,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="28" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="29" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -5208,7 +5429,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="29" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="30" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -5390,7 +5611,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="30" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="31" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -5575,7 +5796,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="31" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="32" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -5757,7 +5978,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="32" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="33" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -5939,7 +6160,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="33" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="34" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -6121,7 +6342,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="34" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="35" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -6303,7 +6524,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="35" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="36" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -6485,7 +6706,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="36" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="37" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -6668,7 +6889,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="37" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="38" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -6850,7 +7071,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="38" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="39" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -7032,7 +7253,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="39" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="40" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -7214,7 +7435,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="40" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="41" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -7396,7 +7617,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="41" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="42" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -7578,7 +7799,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="42" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="43" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -7760,7 +7981,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="43" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="44" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -7942,7 +8163,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="44" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="45" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -8124,7 +8345,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="45" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="46" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -8306,7 +8527,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="46" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="47" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -8488,7 +8709,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="47" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="48" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -8670,7 +8891,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="48" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="49" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -8853,7 +9074,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="49" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="50" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -9036,7 +9257,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="50" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="51" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -9219,7 +9440,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="51" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="52" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -9401,7 +9622,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="52" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="53" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -9583,7 +9804,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="53" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="54" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -9765,7 +9986,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="54" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="55" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -9948,7 +10169,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="55" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="56" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -10131,7 +10352,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="56" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="57" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -10314,7 +10535,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="57" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="58" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -10497,7 +10718,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="58" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="59" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -10680,7 +10901,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="59" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="60" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -10863,7 +11084,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="60" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="61" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -11046,7 +11267,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="61" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="62" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -11229,7 +11450,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="62" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="63" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -11412,7 +11633,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="63" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="64" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -11595,7 +11816,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="64" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="65" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -11775,7 +11996,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="65" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="66" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -11953,7 +12174,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="66" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="67" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -12130,7 +12351,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="67" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="68" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -12308,7 +12529,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="68" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="69" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -12487,7 +12708,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="69" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="70" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;><head>
 <base href=&quot;./&quot;>
 <script>
@@ -12665,7 +12886,7 @@
 
 
 </body></html>" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="70" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="71" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -12845,7 +13066,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="71" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="72" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -13023,7 +13244,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="72" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="73" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -13228,7 +13449,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="73" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="74" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -13426,7 +13647,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="74" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="75" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -13606,7 +13827,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="75" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="76" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -13816,7 +14037,7 @@
 </body>
 </html>
 " sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        <iframe class="slide-frame" data-slide="76" srcdoc="<!DOCTYPE html>
+        <iframe class="slide-frame" data-slide="77" srcdoc="<!DOCTYPE html>
 <html lang=&quot;ko&quot;>
 <head>
 <base href=&quot;./&quot;>
@@ -14012,7 +14233,7 @@
   </div>
 
   <script>
-    const TOTAL = 76;
+    const TOTAL = 77;
     let current = 1;
 
     const frames = document.querySelectorAll('.slide-frame');
